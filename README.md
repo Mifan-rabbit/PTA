@@ -12,14 +12,14 @@
   - 0 ≤ Nk ≤ ... ≤ N2 ≤ N1 ≤ 1000 =>指数的范围
 
 # LeetCode
-## [1163. Last Substring in Lexicographical OrderHard]()
-- C++ String 
-  - 1. 截取子串
+## [1163. Last Substring in Lexicographical OrderHard](https://leetcode.com/problems/last-substring-in-lexicographical-order/)
+- C++ String的使用 
+  1. 截取子串
       - s.substr(pos, n)    截取s中从pos开始（包括0）的n个字符的子串，并返回
       - s.substr(pos)       截取s中从从pos开始（包括0）到末尾的所有字符的子串，并返回
-  - 2.替换子串
+  2. 替换子串
     - s.replace(pos, n, s1)    用s1替换s中从pos开始（包括0）的n个字符的子串
-  - 3. 查找子串
+  3. 查找子串
     - s.find(s1)         查找s中第一次出现s1的位置，并返回（包括0）
     - s.rfind(s1)        查找s中最后次出现s1的位置，并返回（包括0）
     - s.find_first_of(s1)       查找在s1中任意一个字符在s中第一次出现的位置，并返回（包括0）
