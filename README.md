@@ -47,7 +47,7 @@
 
 ## [1025 PAT Ranking (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805474338127872)
 - sort函数
-  - 头文件 #include<algorithm>
+  - 头文件 algorithm
   - 方式 sort(首元素地址, 尾元素地址的下一个地址, 比较函数(非必填))
   
 - strcmp函数
