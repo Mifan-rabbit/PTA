@@ -44,3 +44,26 @@
         1. 出现比子串开头更大的字母，则改变子串开头字符，从这个字符开始继续搜索
         2. 后跟字符不相等，选择后跟字符大的，继续搜索
         3. 其中一个遍历到字符串末尾，则最大子串已经找到
+
+## [1025 PAT Ranking (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805474338127872)
+- sort函数
+  - 头文件 #include<algorithm>
+  - 方式 sort(首元素地址, 尾元素地址的下一个地址, 比较函数(非必填))
+  
+- strcmp函数
+  - 头文件 string.h
+  - 方式 strcmp(str1, str2)
+    - 当str1的字典顺序小于str2时返回一个负数，注意，这个负数不一定是-1，具体和编译器相关
+ 
+- 实现排名
+  - 分数不同排名不同，分数相同排名相同，且占用一个排位
+  - ```
+    stu[0]=1;
+    for(int i=1; i<num; ++i)
+    {
+      if(stu[i].score == stu[i-1].score)
+        stu[i].rank = stu[i-1].rank;
+      else
+        stu[i].rank = i+1;
+     }
+    ```
