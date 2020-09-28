@@ -29,24 +29,23 @@
 - 题目要保证整个输入至少有一对有效通话记录，但不保证每个用户都有有效通话记录，因此一些不存在有效通话记录的用户不被输出
 - 时长计算，对已知起始时间和终止时间，只需要不断将起始时间加1，判断其是否到达终止时间即可，代码如下：
 
-	```(cpp)
-	while (start.day < end.day || start.hour < end.hour || start.minute < end.minute)
-	{
-		time++; 					//该次记录总时间加1min
-		start.minute++;			 	//当前时间加1min
-		if (start.minute == 60) 	//当前分钟数到达60
-		{
-			start.minute = 0; 		//进入下一个小时
-			start.hour++;
-		}
-		if (start.hour == 24) 		//当前小时数到达24
-		{
-			start.hour = 0; 		//进入下一天
-			start.day++;
-		}
-	}
-	```
-
+  ```cpp
+  while (start.day < end.day || start.hour < end.hour || start.minute < end.minute)
+  {
+    time++;      //该次记录总时间加1min
+    start.minute++;     //当前时间加1min
+    if (start.minute == 60)  //当前分钟数到达60
+    {
+      start.minute = 0;   //进入下一个小时
+      start.hour++;
+    }
+    if (start.hour == 24)   //当前小时数到达24
+    {
+      start.hour = 0;   //进入下一天
+      start.day++;
+    }
+  }
+  ```
 
 ### [1025 PAT Ranking (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805474338127872)
 
@@ -74,9 +73,30 @@
      }
     ```
 
+### [1033  To Fill or Not to Fill  (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805458722734080)
+
+- 购油策略，距离a<b<c时
+  - 若油价a<b<c，则在a加油站加满油，再到b加油站考虑后续加油情况（没有更低油价的加油站时，前往油价尽可能低的加油站）
+    - 若油价a>b>c，则在a加油站加油使储油量刚好到b加油站（优先前往更低油价的加油站）
+    - 若满油情况下找不到加油站，则最远能到达的距离为当前加油站的距离上加满状态下能前进的距离
+- 解题策略
+  - 因为开始时，油箱为空，若与最近的加油站的距离不为0，汽车无法出发
+  - 在终点设置一个油价为0的加油站，防止溢出
+
 ### [1035 Password (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805454989803520)
 
-当没有密码需要改时，输出==There are N accounts and no account is modified==，当N等于1时，输出==There is 1 account and no account is modified==
+注意英文输出时单复数情况，当没有密码需要改时，输出==There are N accounts and no account is modified==，当N等于1时，输出==There is 1 account and no account is modified==
+
+### [1038  Recover the Smallest Number  (30分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805449625288704)
+
+- 32 321 3214 组成 321-3214-32 时数值最小，则要求每两个字符串满足 s1+s2<s2+s1(字符拼接)
+- 还要注意前导零要除去，若去除前导零后串长变为0，则要输出“0”
+
+### [1041  Be Unique  (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805444361437184)
+
+- 题目要求在数列中找到最先出现的独一无二的数字
+- 错误行为是从数列尾部开始遍历，一旦为第一次出现，当作当前的最先出现独一无二的数字。
+- 正确做法应该是先计算数字出现次数，再从头开始遍历，寻找出现次数为1的数字
 
 ### [1065 A+B and C (64bit) (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805406352654336)
 
@@ -105,6 +125,21 @@
 - getchar() 接收多余的换行符
 - getline(cin, s) s为string对象，按行读取句子
 
+### [1078  Hashing  (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805389634158592)
+
+- Quadratic problem 是指二次探测方法，即当H(a)发生冲突时，让a按a+1^2^，a-1^2^，a+2^2^，a-2^2^……，a+（Tsize-1）^2^，a-（Tsize-1)^2^的顺序调整a的值。本题目说明只要往正向解决冲突，因此需要按a+1^2^，a+2^2^，a+3^2^，a+4^2^……的顺序调整a的值。
+
+### [1088  Rational Arithmetic  (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805378443755520)
+
+- 简化分数的时候，有可能分子分母用辗转相除法返回的公因数为0，缺少对公因数的判断，会导致异常
+
+### [1089  Insert or Merge  (25分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805377432928256)
+
+- 根据初始数列和目标数列，问它是由插入排序还是归并排序产生的，并输出下一步将产生的序列
+- 一开始是寻找最长递增序列，通过一次比较看出是不是归并排序，但这个不合理，应该模拟归并排序，比较过程中数列是否相同来确定
+- 这里数据范围很小，归并函数中可以不写合并函数，而直接用sort代替
+- 陷阱，可能初始数列和目标数列相同，可能产生双解
+
 ### [1095  Cars on Campus  (30分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805371602845696)
 
 - 删除数组中无效数据时，用两个指针分别指向当前遍历的元素和有效元素的下一位，由于该题同时移动n和n+1个元素，注意访问的第n个元素可能被其它元素覆盖
@@ -113,26 +148,55 @@
     - 遍历时 --------------------  ```for (auto  it = parking.begin(); it  !=  parking.end(); ++it)
  {if (it->second == maxtime)    printf("%s ", it->first.c_str());}```
 
+### [1096  Consecutive Factors  (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805370650738688)
+
+- 本题是求最长的起始数字最小的因子序列
+
+  ```cpp
+  for (long  long  int  i = 2; i <= (long  long  int)sqrt(1.0 * n); ++i) //遍历连续发第一个整数
+  {
+    long  long  temp = 1, j = i; //temp为当前连续整数的乘积
+    while (true) //让j不断加1，看看最长能到多少
+    {
+      temp *= j; //当前连续整数的乘积
+      if (N % temp != 0) //如果不能被n整除，就结束计算
+        break;
+      if (j - i + 1 > len) //发现了更长的长度
+      {
+        ansi = i; //更新第一个整数
+        ansj = j;
+        len = j - i + 1; //跟新最长长度
+      }
+      j++; //下一个整数
+    }
+  }
+  ```
+
+### [1104  Sum of Number Segments  (20分)](https://pintia.cn/problem-sets/994805342720868352/problems/994805363914686464)
+
+- 这是一道通过找规律解决的题目
+- double型在运算过程中，可能无法精确地表示数据造成误差，可以用long double
+
 ## LeetCode
 
 ### [1163. Last Substring in Lexicographical OrderHard](https://leetcode.com/problems/last-substring-in-lexicographical-order/)
 
 - C++ String的使用
 
-    截取子串
+截取子串
   
 | 函数             |                                                           |
 |:-----------------|:----------------------------------------------------------|
 | s.substr(pos, n) | 截取s中从pos开始（包括0）的n个字符的子串，并返回          |
 | s.substr(pos)    | 截取s中从从pos开始（包括0）到末尾的所有字符的子串，并返回 |
   
-    替换子串
+替换子串
   
 | 函数                   |                                              |
 |:-----------------------|:---------------------------------------------|
 | s.replace(pos, n, s1)) | 用s1替换s中从pos开始（包括0）的n个字符的子串 |
   
-    查找子串
+查找子串
 
 | 函数                   |                                                                |
 |:-----------------------|:---------------------------------------------------------------|
@@ -227,7 +291,7 @@ void generateP(int index)
 
 4. **木棒切割问题**：给出N根木棒，长度均已知，现希望通过切割它们来得到至少K段长度相等的木棒（长度必须是整数），问这些长度相等的木棒最长能有多长。
 
-> - 根据对当前长度L来说能得到的木棒段数k与K的大小来进行二分，寻找最后一个满足k≥K的长度L。
+> - 根据对当前长度L来说能得到的木棒段数k与K的大小来进行二分，寻找最后一个满足k≥K的长度L。  
 
 5. **多边形组成的凸边形的外接圆的最大半径**：给出N个线段长度，试将它们头尾相接组合成一个凸多边形，使凸多边形的外接圆（多边形每个顶点都在圆上）的半径最大，求该最大半径。其中$N<=10^5$，线段长度均不超过100，要求算法中不涉及坐标的计算。
 
@@ -240,3 +304,38 @@ void generateP(int index)
 >   - 当最大圆心角小于其它角时，半径变大
 >   - 当最大圆心角大于其它角时，半径变小
 
+### 最大公约数与最小公倍数
+
+1. 最大公约数
+
+> 设a、b均为正整数，则gcd(a,b)=gcd(b,a%b)。  
+> **证明**：设$a=kb+r$，则有$r=a-kb$
+> 设d为a、b的一个公约数，那么d也是r的一个约数，则d是b、r的一个公约数。
+>
+> ```cpp
+> int gcd(int a, int b)
+> {
+>     return !b ? a : gcd(b, a%b); //a<b则ab交换
+> }```
+
+2.最小公倍数
+>$lcm(a,b)=\frac {ab}{gcd(a,b)}$
+>ab在实际计算时可能溢出，更恰当的写法是 $lcm(a,b)=\frac {a}{gcd(a,b)}*b$
+
+### 素数
+
+1. 素数的判断
+
+  ```cpp
+  #include <math.h>
+  bool isPrime(int n)
+  {
+      if (n <= 1)
+          return false;
+      int sqr = (int)sqrt(1.0 * n);
+      for (int i = 2; i <= sqr; i++) //遍历2~根号n
+          if (n % i == 0)
+              return false;
+      return true;
+  }
+  ```
