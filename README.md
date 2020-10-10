@@ -354,18 +354,18 @@ void generateP(int index)
 
 ###### 3.1 大整数的存储
 
-      ```cpp
-      struct bign
-      {
-          int d[1000];
-          int len;
-          bign()
-          {
-              memset(d, 0, sizeof(d));
-              len = 0;
-          }
-      };
-      ```
+```cpp
+struct bign
+{
+    int d[1000];
+    int len;
+    bign()
+    {
+        memset(d, 0, sizeof(d));
+        len = 0;
+    }
+};
+```
 
 ###### 3.2 四则运算
 
@@ -721,8 +721,8 @@ int Lucas(int n, int m)
 |--|--|--|--|
 | vector\<typename\> name;  | stack \<typename\> name; | queue\<typename\> name; | priority_queue\<typename\> name; |
 | push_back() | push(x) | push(x) | push(x) |
-| pop_back() | pop() | pop() #令队首元素出队 | pop() # 令队首元素出队 |
-| insert(it, x) | top() | front()、back() | top() # 获得队首元素，先判断队列是否为空 |
+| pop_back() | pop() | pop() #令队首元素出队 | pop() #令队首元素出队 |
+| insert(it, x) | top() | front()、back() | top() #获得队首元素，先判断队列是否为空 |
 | erase(it) #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素 | empty() | empty() #检测queue是否为空 | empty() #检测queue是否为空 |
 | size() #获得元素的个数 | size() | size() | size() |
 | clear() #清空所有元素 |  |  |  |
@@ -771,7 +771,7 @@ int Lucas(int n, int m)
 ||| +=拼接; ==、<、<=、>、>=按字典序比较大小|
 ||inset(x)|insert(pos, string) #在pos号位置插入字符串string<br>insert(it, it2, it3) #it为原字符串的欲插入位置，it2和it3为待插字符串的首位迭代器，将串[it2, it3)插在it的位置上|
 |find(key) #返回键为key的映射的迭代器|find(value) #返回set中对应值为value的迭代器|str.find(str2, pos) #从str的pos位开始匹配str2，返回str中第一次出现的位置，若找不到，返回string::npos|
-|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(key) #key为欲删除的映射的键<br>erase(first, last) #删除[first,last)内的所有元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(value) #删除值为value元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(pos, length)  #pos为需要开始删除的起始位置，length为删除的字符个数|
+|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(key) #key为欲删除的映射的键<br>erase(first, last) #删除[first,last)内的所有元素|erase(it) #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(value) #删除值为value元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(pos, length)  #pos为需要开始删除的起始位置，length为删除的字符个数|
 |size()|size()|length()/size()|
 |clear()|clear()|clear()|
 
