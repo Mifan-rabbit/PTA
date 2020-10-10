@@ -304,7 +304,9 @@ void generateP(int index)
 >   - 当最大圆心角小于其它角时，半径变大
 >   - 当最大圆心角大于其它角时，半径变小
 
-### 最大公约数与最小公倍数
+### 数学问题
+
+#### 最大公约数与最小公倍数
 
 1. 最大公约数
 
@@ -322,9 +324,9 @@ void generateP(int index)
 >$lcm(a,b)=\frac {ab}{gcd(a,b)}$
 >ab在实际计算时可能溢出，更恰当的写法是 $lcm(a,b)=\frac {a}{gcd(a,b)}*b$
 
-### 素数
+#### 素数
 
-1. 素数的判断
+##### 1. 素数的判断
 
   ```cpp
   #include <math.h>
@@ -339,3 +341,439 @@ void generateP(int index)
       return true;
   }
   ```
+
+##### 2. 质因子分解
+
+- 因为1本身不是素数，因此它没有质因子，题目中要对1进行处理  
+- 考虑到 $2*3*5*7*11*13*17*19*23*29$ 已经超过int范围了，所以数组只需要开到10
+- 对一个正整数n来说，如果它存在1和本身之外的因子，那么一定是在sqrt(n)的左右成对出现的，用在“质因子”上，对于正整数n，如果它存在[2,n]范围内的质因子，要么这些质因子全部小于等于sqrt(n)，要么只存在一个大于sqrt(n)的质因子
+- 如果要求一个正整数N的因子个数，只需要对其质因子分解，得到各质因子 $p_i$ 的个数分别为 $c_1,c_2,……,c_k$，于是N的因子个数是$(c_1+1)*(c_2+1)*……*(c_k+1)$
+- 同理，N的所有因子之和$(1+p_1+p_1^2+……+p_1^{c_1})*(1+p_2+p_2^2+……+p_2^{c_2})*……*(1+p_k+p_k^2+……+p_k^{c_k})=\frac{1-p_1^{c1+1}}{1-p_1}*\frac{1-p_2^{c2+1}}{1-p_2}*...\frac{1-p_k^{ck+1}}{1-p_k}$
+
+##### 3. 大整数
+
+###### 3.1 大整数的存储
+
+      ```cpp
+      struct bign
+      {
+          int d[1000];
+          int len;
+          bign()
+          {
+              memset(d, 0, sizeof(d));
+              len = 0;
+          }
+      };
+      ```
+
+###### 3.2 四则运算
+
+- 高精度加法(都为正数)
+
+    ```cpp
+    bign add(bign a, bign b)
+    {
+        bign c;
+        int carry = 0;                               //carry是进位
+        for (int i = 0; i < a.len || i < b.len; i++) //以较长的为界限
+        {
+            int temp = a.d[i] + b.d[i] + carry;
+            c.d[c.len++] = temp % 10;
+            carry = temp / 10;
+        }
+        if (carry != 0) //如果最后进位不为0，则直接赋给结果的最高位
+        {
+            c.d[c.len++] = carry;
+        }
+        return c;
+    }
+      ```
+
+- 高精度减法
+
+    ```cpp
+    bign sub(bign a, bign b)
+    {
+        bign c;
+        for (int i = 0; i < a.len || i < b.len; i++)
+        {
+            if (a.d[i] < b.d[i]) //如果不够减
+            {
+                a.d[i + 1]--; //向高位借位
+                a.d[i] += 10; //当前位加10
+            }
+            c.d[c.len++] = a.d[i] - b.d[i];
+        }
+        while (c.len -1 >= 1 && c.d[c.len - 1] == 0)
+            c.len--; //去除最高位的0，同时至少保留一位最低为
+        return c;
+    }
+    ```
+
+- 高精度与低精度的乘法
+
+    ```cpp
+    bign multi(bign a, int b)
+    {
+        bign c;
+        int carry = 0; //进位
+        for (int i = 0; i < a.len; i++)
+        {
+            int temp = a.d[i] * b + carry;
+            c.d[c.len++] = temp % 10;
+            carry = temp / 10;
+        }
+        while (carry != 10) //和加法不一样，乘法的进位可能不止一位
+        {
+            c.d[c.len++] = carry % 10;
+            carry /= 10;
+        }
+    }
+    ```
+
+- 高精度与低精度的除法
+
+    ```cpp
+    bign divide(bign a, int b, int &r) //r为余数
+    {
+        bign c;
+        c.len = a.len;
+        for (int i = a.len - 1; i >= 0; i--)
+        {
+            r = r * 10 + a.d[i];
+            if (r < b)
+                c.d[i] = 0;
+            else
+            {
+                c.d[i] = r / b;
+                r = r % b;
+            }
+        }
+        while (c.len - 1 >= 1 && c.d[c.len - 1] == 0)
+            c.len--;
+        return c;
+    }
+    ```
+
+##### 4. 欧几里得算法
+
+###### 4.1 扩展欧几里得算法
+
+> $$\begin{cases}
+> ax_1 + by_1 = gcd(a, b)\\
+> bx_2 + (a \pmod b) y_2 = gcd(b, a \pmod b)
+> \end{cases}$$
+> **得到递推公式：**
+> $$\begin{cases}
+> x_1 = y_1\\
+> y_1 = x_2 - (a/b)y_2
+> \end{cases}$$
+> **通过一组解得到全部解** *(k为任意整数)* **：**
+> $$\begin{cases}
+> x' = x + \frac {b}{gcd} *k \\
+> y' = y - \frac {a}{gcd} * k
+> \end{cases}$$
+> **可以得出最小的一组解：**
+> $$\begin{cases}
+> x_{min} = (x \pmod \frac {b}{gcd} + \frac {b}{gcd}) \pmod \frac {b}{gcd}\\
+> y_{min} = (y \pmod \frac {a}{gcd} + \frac {a}{gcd}) \pmod \frac {a}{gcd}
+> \end{cases}$$
+
+```cpp
+int exGcd(int a, int b, int &x, int &y)
+{
+    if (b == 0)
+    {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int g = exGcd(b, a % b, x, y);
+    int temp = x;
+    x = y;
+    y = temp - a / b * y;
+    return g;
+}
+```
+
+###### 4.2 方程 $ax+by=c$ 的求解
+
+> $a x_0 + b y_0 = gcd$
+> $a \frac {cx_0}{gcd} + b \frac {cy_0}{gcd} = c$
+> 故当 $0 \equiv c \pmod {gcd} $ 时,一组解$(\frac {cx_0}{gcd}, \frac {cy_0}{gcd})$
+
+###### 4.3 同余式 $ax \equiv c \pmod m$
+
+> $0 \equiv (ax-c) \pmod m$
+> 推出 $ ax - c = my$
+> 令 y=-y,则
+> $ax + my = c$
+
+###### 4.4 逆元求解以及 $ (b/a) \pmod m$
+
+> **解决** $(b/a)\%m \ne [(b\%m)/(a\%m)]%\m$
+> 假设a、m是整数，求a模m的逆元,即 $ab \equiv 1 \pmod m$
+
+```cpp
+int inverse(int a, int m)
+{
+    int x, y;
+    int g = exGcd(a, m, x, y); //求解 ax+my=1
+    return (x % m + m) % m;    //a模m的逆元为最小正整数解 (x%m+m)%m
+}
+```
+
+##### 5. 组合数
+
+###### 5.1 $n!$中有$(\frac {n}{p}  + \frac {n}{p^2} + \frac {n}{p^3} + ...)$个质因子p
+
+```cpp
+//计算n!中有多少个质因子p
+int cal(int n, int p)
+{
+    int ans = 0;
+    while (n)
+    {
+        ans += n / p;
+        n /= p; //相当于分母多乘一个p
+    }
+    return ans;
+}
+
+int cal(int n, int p)
+{
+    if (n < p)
+        return 0;
+    return n / p + cal(n / p, p);
+}
+```
+
+通过这个算法，可以很快地计算出n!的末尾有多少个零
+
+###### 5.2 计算 $C_n^m$
+
+$C_n^m=C_{n-1}^m+C_{n-1}^{m-1}$
+
+```cpp
+// 递归求解
+int res[100][100] = {0};
+int C(int n, int m)
+{
+    if (m == 0 || m == n)
+        return 1;
+    if (res[n][m] != 0)
+        return res[n][m];
+    return res[n][m] = C(n - 1, m) + C(n - 1, m - 1);
+}
+
+//递推求解
+int res[67][67] = {0};
+const int n = 60;
+void calC()
+{
+    for (int i = 0; i <= n; i++)
+        res[i][0] = res[i][i] = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        for (int j = 1; j <= i/2; j++)
+        {
+            res[i][j] = res[i - 1][j] + res[i - 1][j - 1];
+            res[i][i - j] = res[i][j];
+        }
+    }
+}
+```
+
+$C_n^m=\frac{n!}{m!(n-m)!}=\frac{(n-m+1)*(n-m+2)*...*(n-m+m)}{m*(m-1)*...*1}$
+
+```cpp
+// 定义式的变形计算
+long long C(long long n, long long m)
+{
+    long long ans = 1;
+    for (long long i = 1; i <= m; i++)
+        ans = ans * (n - m + i) / i; //容易溢出
+}
+```
+
+###### 5.3 计算 $C_n^m \pmod p$
+
+- 方法一
+
+```cpp
+// 递归求解
+int res[100][100] = {0};
+int C(int n, int m, int p)
+{
+    if (m == 0 || m == n)
+        return 1;
+    if (res[n][m] != 0)
+        return res[n][m];
+    return res[n][m] = C(n - 1, m) + C(n - 1, m - 1) % p;
+}
+
+//递推求解
+int res[67][67] = {0};
+const int n = 60;
+void calC()
+{
+    for (int i = 0; i <= n; i++)
+        res[i][0] = res[i][i] = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        for (int j = 1; j <= i/2; j++)
+        {
+            res[i][j] = res[i - 1][j] + res[i - 1][j - 1] % p;
+            res[i][i - j] = res[i][j];
+        }
+    }
+}
+```
+
+- 方法二
+
+**质因子分解**  
+$C_n^m \pmod p=p_1^{c_1}*p_2^{c_2}*...*p_k^{c_k} \pmod p$，可以用快速幂计算每组 $p_i^{c_i}\pmod p$  
+需要遍历不超过n的所有质数$p_i$，然后计算 n!、m!、(n-m)!中分别含有质因子$p_i$的个数x、y、z，就知道$C_n^m$中含质因子$p_i$的个数为x-y-z。
+
+```cpp
+//使用筛选法得到素数表prime，注意表中最大素数不得小于n
+int prime[maxn];
+int C(int n, int m, int p)
+{
+    int ans = 1;
+    //遍历不超过n的所有质数
+    for (int i = 0; prime[i] <= n; i++)
+    {
+        //计算c(n,m)中prime[i]的指数c，cal(n,m)为n!中含质因子k的个数
+        int c = cal(n, prime[i]) - cal(m, prime[i]) - cal(n - m, prime[i]);
+        //快速幂计算prime[i]^c%p
+        ans = ans * binaryPow(prime[i], c, p) % p;
+    }
+}
+```
+
+- 方法三
+  1. m<p，且p是素数
+
+      ```cpp
+      int C(int n, int m, int p)
+      {
+        int ans = 1;
+        for(int i = 1; i <=m; i++)
+        {
+          ans = ans * (n - m +i) % p;
+          ans = ans * inverse(i, p) % p;  //求i的逆元
+        }
+      }
+      ```
+
+  2. m任意，且p是素数----------分母一定存在p的倍数，先处理掉，变量numP统计分子中的p的比分母中的p多几个。
+
+      ```cpp
+      int C(int n, int m, int p)
+      {
+          int ans = 1, numP = 0;
+          for (int i = 1; i <= m; i++)
+          {
+              int temp = n - m + i; //分子
+              while (temp % p == 0)
+              {
+                  numP++;
+                  temp /= p;
+              }
+              ans = ans * temp % p;
+
+              temp = i; //分母
+              while (temp % p == 0)
+              {
+                  numP--;
+                  temp /= p;
+              }
+              ans = ans * inverse(temp, p) % p;
+          }
+          if (numP > 0)
+              return 0;    //若numP>0，直接返回0
+          else
+              return ans;
+      }
+      ```
+
+  3. m任意，p可能不是素数----------对p进行质因子分解，针对每一个质因子$p_i$，统计分子比分母中多含质因子$p_i$的个数。
+
+- 方法四(Lucas定理)
+
+如果p是素数，将m和n表示为p进制：$$m=m_kp^k+m_{k-1}p^{k-1}+...+m_0$$ $$n=n_kp^k+n_{k-1}p^{k-1}+...+n_0$$ 那么Lucas定理告诉我们，$C_n^m=C_{n_k}^{m_k}*C_{n_{k-1}}^{m_{k-1}}*...*C_{n_0}^{m_0}$成立
+
+```cpp
+int Lucas(int n, int m)
+{
+    if (m == 0)
+        return 1;
+    return C(n % p, m % p) * Lucas(n / p, m / p) % p;
+}
+```
+
+### STL
+
+| vector | stack | queue | priority_queue |
+|--|--|--|--|
+| vector\<typename\> name;  | stack \<typename\> name; | queue\<typename\> name; | priority_queue\<typename\> name; |
+| push_back() | push(x) | push(x) | push(x) |
+| pop_back() | pop() | pop() #令队首元素出队 | pop() # 令队首元素出队 |
+| insert(it, x) | top() | front()、back() | top() # 获得队首元素，先判断队列是否为空 |
+| erase(it) #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素 | empty() | empty() #检测queue是否为空 | empty() #检测queue是否为空 |
+| size() #获得元素的个数 | size() | size() | size() |
+| clear() #清空所有元素 |  |  |  |
+
+> 注意：
+> vector\<typename\> name[arraySize] 的一维长度已经固定
+> vector\<vector\<typename\>\> name 是两个维都可以变长的二维数组
+> 
+> priority_queue队首元素一定是当前队列中优先级最高的那一个。
+> 元素优先级设置
+> (1)基本数据类型的优先级设置
+> 若想把最小的元素放在队首：
+> priority_queue\<int, vector\<int\>, greater\<int\>\> q;
+> 否则：
+> priority_queue\<int, vector\<int\>, less\<int\>\> q;
+> (2)结构体的优先级设置
+> 重载小于号的友元函数，优先队列的这个重载函数与sort中的cmp函数效果是相反的
+>
+> ```cpp
+> struct fruit{
+>     string name;
+>     int pricr;
+>     friend bool operator < (fruit f1, fruit 2)
+>     {
+>         return f1.price < f2.price;
+>     }
+> }
+> ```
+>
+> 或者把重载函数写在结构体外面
+>
+> ```cpp
+> struct cmp{
+>     bool operator () (fruit f1, fruit f2)
+>     {
+>         return f1.price > f2.price;
+>     }
+> }
+> priority_queue<fruit, vector<fruit>, cmp> q;
+> ```
+
+|map|set|string|
+|--|--|--|
+|map<typename1, typename2> mp;|set\<typename\> name;|string str;|
+|||substr(pos, len) #返回从pos号位开始，长度为len的字串|
+||| +=拼接; ==、<、<=、>、>=按字典序比较大小|
+||inset(x)|insert(pos, string) #在pos号位置插入字符串string<br>insert(it, it2, it3) #it为原字符串的欲插入位置，it2和it3为待插字符串的首位迭代器，将串[it2, it3)插在it的位置上|
+|find(key) #返回键为key的映射的迭代器|find(value) #返回set中对应值为value的迭代器|str.find(str2, pos) #从str的pos位开始匹配str2，返回str中第一次出现的位置，若找不到，返回string::npos|
+|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(key) #key为欲删除的映射的键<br>erase(first, last) #删除[first,last)内的所有元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(value) #删除值为value元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(pos, length)  #pos为需要开始删除的起始位置，length为删除的字符个数|
+|size()|size()|length()/size()|
+|clear()|clear()|clear()|
+
+> 注意：
+> 用c_str()将string类转换为字符数组，可以用printf输出,printf("%s\n", str.c_str());
