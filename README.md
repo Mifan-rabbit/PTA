@@ -728,9 +728,11 @@ int Lucas(int n, int m)
 | clear() #清空所有元素 |  |  |  |
 
 > 注意：
+> ①
 > vector\<typename\> name[arraySize] 的一维长度已经固定
 > vector\<vector\<typename\>\> name 是两个维都可以变长的二维数组
 > 
+> ②
 > priority_queue队首元素一定是当前队列中优先级最高的那一个。
 > 元素优先级设置
 > (1)基本数据类型的优先级设置
@@ -764,16 +766,37 @@ int Lucas(int n, int m)
 > priority_queue<fruit, vector<fruit>, cmp> q;
 > ```
 
-|map|set|string|
-|--|--|--|
-|map<typename1, typename2> mp;|set\<typename\> name;|string str;|
-|||substr(pos, len) #返回从pos号位开始，长度为len的字串|
-||| +=拼接; ==、<、<=、>、>=按字典序比较大小|
-||inset(x)|insert(pos, string) #在pos号位置插入字符串string<br>insert(it, it2, it3) #it为原字符串的欲插入位置，it2和it3为待插字符串的首位迭代器，将串[it2, it3)插在it的位置上|
-|find(key) #返回键为key的映射的迭代器|find(value) #返回set中对应值为value的迭代器|str.find(str2, pos) #从str的pos位开始匹配str2，返回str中第一次出现的位置，若找不到，返回string::npos|
-|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(key) #key为欲删除的映射的键<br>erase(first, last) #删除[first,last)内的所有元素|erase(it) #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(value) #删除值为value元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(pos, length)  #pos为需要开始删除的起始位置，length为删除的字符个数|
-|size()|size()|length()/size()|
-|clear()|clear()|clear()|
+|map|set|string|pair|
+|--|--|--|--|
+|map<typename1, typename2> mp;|set\<typename\> name;|string str;|pair<typeName1, typeName2> name;|
+|||substr(pos, len) #返回从pos号位开始，长度为len的字串|pair<string, int> p("haha", 5) #用小括号初始化|
+||| +=拼接; ==、<、<=、>、>=按字典序比较大小| 使用==、<、<=、>、>=比较大小，规则以先first的大小为标准，只有当first相等时才去判断second大小|
+||inset(x)|insert(pos, string) #在pos号位置插入字符串string<br>insert(it, it2, it3) #it为原字符串的欲插入位置，it2和it3为待插字符串的首位迭代器，将串[it2, it3)插在it的位置上|pair<string, int>("haha", 5) #构建临时pair<br>make_pair("haha", 5) #构建临时pair|
+|find(key) #返回键为key的映射的迭代器|find(value) #返回set中对应值为value的迭代器|str.find(str2, pos) #从str的pos位开始匹配str2，返回str中第一次出现的位置，若找不到，返回string::npos|pair只有两个元素，分别是first和second|
+|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(key) #key为欲删除的映射的键<br>erase(first, last) #删除[first,last)内的所有元素|erase(it) #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(value) #删除值为value元素|erase(it)<br> #it为所需要删除元素的迭代器<br>erase(first, last) #删除[first,last)内的所有元素<br>erase(pos, length)  #pos为需要开始删除的起始位置，length为删除的字符个数||
+|size()|size()|length()/size()||
+|clear()|clear()|clear()||
 
 > 注意：
-> 用c_str()将string类转换为字符数组，可以用printf输出,printf("%s\n", str.c_str());
+> ①用c_str()将string类转换为字符数组，可以用printf输出,printf("%s\n", str.c_str());
+>
+> ②pair 可以作为map的键值对来进行插入
+>
+> ```cpp
+> map<string, int> mp;
+> mp.insert(make_pair("heihei", 5));
+> mp.insert(pair<string, int>("haha", 10));
+> for(map<string, int>::iterator it = mp.begin(); it != mp.end(); it++)
+> {
+>     cout << it->first << " " << it->second << endl;
+> }
+> ```
+
+### algorithm
+
+- reverse(it, it2)可以将数组指针在[it, it2)之间的元素或容器的迭代器在[it, it2)范围内的元素进行反转
+- next_permulation()给出一个序列在全排列中的下一个序列，eg:231的下一个序列是312，再下一个是321
+- fill()可以把数组或容器中的某一段区间赋为某个相同的值
+- sort(首元素地址(必填), 尾元素地址的下一个地址(必填), 比较函数(非必填));
+- lower_bound(first, last, val)用在一个有序数组或容器中，寻找[first, last)范围内第一个值大于等于val的元素的位置，如果数组，则返回该位置的指针，如果是容器，则返回该位置的迭代器
+- upper_bound(first, last, val)用在一个有序数组或容器中，寻找[first, last)范围内第一个值大于val的元素的位置，如果数组，则返回该位置的指针，如果是容器，则返回该位置的迭代器
